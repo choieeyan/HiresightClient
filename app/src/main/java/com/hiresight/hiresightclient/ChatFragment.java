@@ -1,6 +1,7 @@
 package com.hiresight.hiresightclient;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -107,6 +109,20 @@ public class ChatFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new ClientMessageListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
+                ClientChatlist chatlist = documentSnapshot.toObject(ClientChatlist.class);
+                String id = documentSnapshot.getId(); //get id of database
+                String userID = chatlist.getUserID();
+                Intent intent = new Intent(getActivity(), ClientMessageActivity.class);
+                intent.putExtra("UserID", userID);
+                startActivity(intent);
+
+
+            }
+        });
     }
 
     @Override

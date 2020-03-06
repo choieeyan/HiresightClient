@@ -85,15 +85,15 @@ public class ClientMessageActivity extends AppCompatActivity {
                                 recentMessage.put("timeStamp", messageDateTime);
                                 recentMessage.put("userID", userID);
                                 messageDB.collection("Clients").document(clientID)
-                                        .collection("Chatlist").document()
+                                        .collection("Chatlist").document(userID)
                                         .set(recentMessage);
 
                                 Map<String, Object> receiveMessage = new HashMap<>();
                                 receiveMessage.put("recentMessage", documentID);
                                 receiveMessage.put("timeStamp", messageDateTime);
-                                receiveMessage.put("userID", userID);
-                                messageDB.collection("Clients").document(clientID)
-                                        .collection("Chatlist").document()
+                                receiveMessage.put("clientID", clientID);
+                                messageDB.collection("Users").document(userID)
+                                        .collection("Chatlist").document(clientID)
                                         .set(receiveMessage);
                             }
                         })

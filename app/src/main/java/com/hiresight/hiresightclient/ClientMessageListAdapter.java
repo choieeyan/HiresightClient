@@ -25,6 +25,7 @@ public class ClientMessageListAdapter extends FirestoreRecyclerAdapter<ClientCha
     DocumentReference reference, ref;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth;
+    private OnItemClickListener listener;
 
     public ClientMessageListAdapter(@NonNull FirestoreRecyclerOptions<ClientChatlist> options) {
         super(options);
@@ -69,6 +70,8 @@ public class ClientMessageListAdapter extends FirestoreRecyclerAdapter<ClientCha
                 }
             }
         });
+
+
     }
 
     @NonNull
@@ -89,9 +92,28 @@ public class ClientMessageListAdapter extends FirestoreRecyclerAdapter<ClientCha
             messageText = itemView.findViewById(R.id.messageText);
             user_image = itemView.findViewById(R.id.user_image);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null){
+                        listener.onItemClick(getSnapshots().getSnapshot(position),position);
+                    }
+                }
+            });
+
 
         }
     }
+
+    public interface OnItemClickListener{
+        void onItemClick(DocumentSnapshot documentSnapshot, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
+    }
+
 
 
 }
