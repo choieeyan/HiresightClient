@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -105,27 +106,40 @@ public class CreateJobFragment extends Fragment {
     }
 
     public void submitPost(){
+
         submitBtn.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String currentDateTime = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()) + " " + new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                        String clientID = currentUser.getUid();
-                        CreateJobPost post = new CreateJobPost(currentDateTime, startDateText.getText().toString(), endDateText.getText().toString(), locationText.getText().toString(), productText.getText().toString(), payText.getText().toString(), paxText.getText().toString(), profText.getText().toString(), clientID);
-                        db.collection("Client Posts")
-                                .add(post)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        final String currentDateTime = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()) + " " + new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                        final String clientID = currentUser.getUid();
+                        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        DocumentReference reference = db.collection("Clients").document(clientID);
+                        reference.get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        Toast.makeText(getActivity().getApplicationContext(), "Job Posted!", Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getActivity().getApplicationContext(), "Error! Please Try Again.", Toast.LENGTH_LONG).show();
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        if (documentSnapshot.exists()) {
+                                            String companyName = documentSnapshot.getString("name");
+                                            CreateJobPost post = new CreateJobPost(currentDateTime, startDateText.getText().toString(), endDateText.getText().toString(), locationText.getText().toString(), productText.getText().toString(), payText.getText().toString(), paxText.getText().toString(), profText.getText().toString(), clientID, companyName);
+                                            db.collection("Client Posts")
+                                                    .add(post)
+                                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                        @Override
+                                                        public void onSuccess(DocumentReference documentReference) {
+                                                            Toast.makeText(getActivity().getApplicationContext(), "Job Posted!", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(getActivity().getApplicationContext(), "Error! Please Try Again.", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                        }
                                     }
                                 });
+
                     }
                 }
 

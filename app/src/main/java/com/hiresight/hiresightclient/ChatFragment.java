@@ -99,7 +99,7 @@ public class ChatFragment extends Fragment {
     private void setUpRecyclerView(){
 
 
-        Query query = reference.orderBy("timeStamp", Query.Direction.ASCENDING);
+        Query query = reference.orderBy("dateTime", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<ClientChatlist> options = new FirestoreRecyclerOptions.Builder<ClientChatlist>()
                 .setQuery(query, ClientChatlist.class)

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,9 +71,7 @@ public class ClientMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String clientID = auth.getCurrentUser().getUid();
-                String messageDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                String messageTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                final String messageDateTime = messageDate + " " + messageTime;
+                final Date messageDateTime = new Date();
                 ClientMessage message = new ClientMessage(clientID, userID, messageSend.getText().toString(), messageDateTime);
 
                 messageDB.collection("Messages")
@@ -82,7 +82,7 @@ public class ClientMessageActivity extends AppCompatActivity {
                                 documentID = documentReference.getId();
                                 Map<String, Object> recentMessage = new HashMap<>();
                                 recentMessage.put("recentMessage", documentID);
-                                recentMessage.put("timeStamp", messageDateTime);
+                                recentMessage.put("dateTime", messageDateTime);
                                 recentMessage.put("userID", userID);
                                 messageDB.collection("Clients").document(clientID)
                                         .collection("Chatlist").document(userID)
@@ -90,7 +90,7 @@ public class ClientMessageActivity extends AppCompatActivity {
 
                                 Map<String, Object> receiveMessage = new HashMap<>();
                                 receiveMessage.put("recentMessage", documentID);
-                                receiveMessage.put("timeStamp", messageDateTime);
+                                receiveMessage.put("dateTime", messageDateTime);
                                 receiveMessage.put("clientID", clientID);
                                 messageDB.collection("Users").document(userID)
                                         .collection("Chatlist").document(clientID)
@@ -112,19 +112,24 @@ public class ClientMessageActivity extends AppCompatActivity {
 
 
     private void setUpRecyclerView(){
-        Query query = retrieveRef.whereEqualTo("senderID", auth.getUid())
-                .whereEqualTo("receiverID", userID)
-                .orderBy("dateTime", Query.Direction.ASCENDING);
-
+        Query query = retrieveRef.orderBy("dateTime", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<ClientMessage> options = new FirestoreRecyclerOptions.Builder<ClientMessage>()
                 .setQuery(query, ClientMessage.class)
                 .build();
 
-        clientMessageAdapter = new ClientMessageAdapter(options);
+        clientMessageAdapter = new ClientMessageAdapter(options, userID);
+        clientMessageAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                recyclerView.smoothScrollToPosition(clientMessageAdapter.getItemCount());
+                }
+
+        });
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(clientMessageAdapter);
+
     }
 
 

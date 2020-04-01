@@ -3,9 +3,12 @@ package com.hiresight.hiresightclient;
 import java.util.Locale;
 
 public class CreateJobPost {
-    private String postDateTime, startDate, endDate, location, product, pay, paxRequired, profession, clientID;
+    private String postDateTime, startDate, endDate, location, product, pay, paxRequired, profession, clientID, companyName;
 
-    public CreateJobPost(String postDateTime, String startDate, String endDate, String location, String product, String pay, String paxRequired, String profession, String clientID) {
+    public CreateJobPost() {
+    }
+
+    public CreateJobPost(String postDateTime, String startDate, String endDate, String location, String product, String pay, String paxRequired, String profession, String clientID, String companyName) {
         this.postDateTime = postDateTime;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -15,6 +18,15 @@ public class CreateJobPost {
         this.paxRequired = paxRequired;
         this.profession = profession;
         this.clientID = clientID;
+        this.companyName = companyName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public String getPostDateTime() {

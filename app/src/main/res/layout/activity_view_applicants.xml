@@ -3,11 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PastJobFragment">
-
-    <!-- TODO: Update blank fragment layout -->
+    tools:context=".ViewApplicantsActivity">
+ 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pastjob_view"
+        android:id="@+id/applicants_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

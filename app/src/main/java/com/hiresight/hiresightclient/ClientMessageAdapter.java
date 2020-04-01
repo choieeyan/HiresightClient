@@ -27,9 +27,11 @@ public class ClientMessageAdapter extends FirestoreRecyclerAdapter<ClientMessage
     public static final int MSG_RECEIVED = 0;
     public static final int MSG_SENT = 1;
     private FirebaseUser currentUser;
+    private String userID;
 
-    public ClientMessageAdapter(@NonNull FirestoreRecyclerOptions<ClientMessage> options) {
+    public ClientMessageAdapter(@NonNull FirestoreRecyclerOptions<ClientMessage> options, String userID) {
         super(options);
+        this.userID = userID;
     }
 
     @Override
@@ -56,7 +58,17 @@ public class ClientMessageAdapter extends FirestoreRecyclerAdapter<ClientMessage
         });
 
         messageHolder.messageText.setText(clientMessage.getMessage());
-        messageHolder.messageTime.setText(clientMessage.getDateTime());
+        messageHolder.messageTime.setText(clientMessage.getDateTime().toString());
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if ((currentUser.getUid().equals(clientMessage.getReceiverID()) || currentUser.getUid().equals(clientMessage.getSenderID()))
+                && (userID.equals(clientMessage.getReceiverID()) || userID.equals(clientMessage.getSenderID()))) {
+            messageHolder.itemView.setVisibility(View.VISIBLE);
+            messageHolder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        } else{
+            messageHolder.itemView.setVisibility(View.GONE);
+            messageHolder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+        }
 
     }
 
